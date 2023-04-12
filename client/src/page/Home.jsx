@@ -41,7 +41,11 @@ const Home = () => {
     if (contract) createPlayerToken();
   }, [contract]);
 
-  
+  useEffect(() => {
+    if (gameData.activeBattle) {
+      navigate(`/battle/${gameData.activeBattle.name}`);
+    }
+  }, [gameData]);
   
 
   return (

@@ -23,8 +23,17 @@ export const GlobalContextProvider = ({ children }) => {
     const player1Ref = useRef();
     const player2Ref = useRef();
     
-    const navigate = useNavigate();
+  const navigate = useNavigate();
+  
+  useEffect(() => {
+    const battlegroundFromLocalStorage = localStorage.getItem('battleground');
 
+    if (battlegroundFromLocalStorage) {
+      setBattleGround(battlegroundFromLocalStorage);
+    } else {
+      localStorage.setItem('battleground', battleGround);
+    }
+  }, [])
 
     
      //* Set the wallet address to the state
@@ -67,9 +76,9 @@ export const GlobalContextProvider = ({ children }) => {
         provider,
         walletAddress,
         setShowAlert,
-        // player1Ref,
-        // player2Ref,
-        // setUpdateGameData,
+        player1Ref,
+        player2Ref,
+        setUpdateGameData,
       });
     }
   }, [contract]);
@@ -99,11 +108,44 @@ export const GlobalContextProvider = ({ children }) => {
       }
     }
   }, [errorMessage]);
+
+  //* Set the game data to the state
+  useEffect(() => {
+    const fetchGameData = async () => {
+      if (contract) {
+        const fetchedBattles = await contract.getAllBattles();
+        console.log("🚀 ~ file: index.jsx:108 ~ fetchGameData ~ fetchedBattles:", fetchedBattles)
+        const pendingBattles = fetchedBattles.filter((battle) => battle.battleStatus === 0);
+        let activeBattle = null;
+
+        fetchedBattles.forEach((battle) => {
+          if (battle.players.find((player) => player.toLowerCase() === walletAddress.toLowerCase())) {
+            if (battle.winner.startsWith('0x00')) {
+              activeBattle = battle;
+            }
+          }
+        });
+
+        setGameData({ pendingBattles: pendingBattles.slice(1), activeBattle });
+        console.log("🚀 ~ file: index.jsx:121 ~ fetchGameData ~ activeBattle:", activeBattle)
+      }
+    };
+
+    fetchGameData();
+  }, [contract, updateGameData]);
     
 
     return (
       <GlobalContext.Provider value={{
-        contract, walletAddress, showAlert, setShowAlert, errorMessage, setErrorMessage,
+        contract,
+        walletAddress,
+        showAlert, setShowAlert,
+        errorMessage, setErrorMessage,
+        battleName, setBattleName,
+        gameData, setGameData,
+        step, setStep,
+        battleGround, setBattleGround
+
             
             }}>
             {children}

@@ -2,7 +2,7 @@ import { ethers } from 'ethers';
 
 import { ABI } from '../contract';
 
-const AddNewEvent = (eventfilter, provider, eb) => {
+const AddNewEvent = (eventfilter, provider, cb) => {
     provider.removeListener(eventfilter); // not have multiple listeners for the same event
 
     provider.on(eventfilter, (logs) => {
@@ -12,7 +12,7 @@ const AddNewEvent = (eventfilter, provider, eb) => {
     })
 }
 
-export const createEventListeners = ({ navigate, contract, provider, walletAddress, setShowAlert }) => {
+export const createEventListeners = ({ navigate, contract, provider, walletAddress, setShowAlert, setUpdateGameData }) => {
     const NewPlayerEventFilter = contract.filters.NewPlayer();
 
     AddNewEvent(NewPlayerEventFilter, provider, ({ args }) => {
@@ -25,4 +25,18 @@ export const createEventListeners = ({ navigate, contract, provider, walletAddre
             })
         }
     })
+
+
+    // join game
+
+    const NewBattleEventFilter = contract.filters.NewBattle();
+    AddNewEvent(NewBattleEventFilter, provider, ({ args }) => {
+        // navigate both players to the battle page
+        console.log('New Battle Created!', args, walletAddress);
+
+        if (walletAddress.toLowerCase() === args.player1.toLowerCase() || walletAddress.toLowerCase() === args.player2.toLowerCase()) {
+            navigate(`/battle/${args.battleName}`)
+        }
+        setUpdateGameData((prevupdateGameData) => prevupdateGameData + 1);
+    });
 }
