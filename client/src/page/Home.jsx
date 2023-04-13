@@ -29,18 +29,19 @@ const Home = () => {
       setErrorMessage(error);
     }
   };
-
+// checks for player token and redirects to create battle page
   useEffect(() => {
-    const createPlayerToken = async () => {
-      const playerExists = await contract.isPlayer(walletAddress);
-      const playerTokenExists = await contract.isPlayerToken(walletAddress);
+  const createPlayerToken = async () => {
+    const playerExists = await contract.isPlayer(walletAddress);
+    const playerTokenExists = await contract.isPlayerToken(walletAddress);
 
-      if (playerExists && playerTokenExists) navigate('/create-battle');
-    };
+    if (playerExists && playerTokenExists) navigate('/create-battle');
+  };
 
-    if (contract) createPlayerToken();
+  if (contract) createPlayerToken();
   }, [contract]);
 
+  // redirect to /battle if player is in an active battle
   useEffect(() => {
     if (gameData.activeBattle) {
       navigate(`/battle/${gameData.activeBattle.name}`);

@@ -7,11 +7,14 @@ import { CustomButton, CustomInput, PageHOC, GameLoad } from '../components';
 
 
 const CreateBattle = () => {
-  const { contract, battleName, setBattleName, gameData } = useGlobalContext();
+  const { contract, battleName, setBattleName, gameData, setErrorMessage } = useGlobalContext();
   const [waitBattle, setWaitBattle] = useState(false); // loading
   const navigate = useNavigate();
 
   useEffect(() => {
+    if (gameData?.activeBattle?.battleStatus === 1) {
+      navigate(`/battle/${gameData.activeBattle.name}`)
+    }
     if (gameData?.activeBattle?.battleStatus === 0) {
       setWaitBattle(true);
     }
@@ -21,12 +24,12 @@ const CreateBattle = () => {
     if (!battleName || !battleName.trim()) return null; // checks for empty input
 
     try {
-      await contract.createBattle(battleName)
+      await contract.createBattle(battleName, { gasLimit: 200000 })
 
       setWaitBattle(true);
 
     } catch (error) {
-      console.log(error);
+      setErrorMessage(error);
     }
     
   }

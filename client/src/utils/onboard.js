@@ -117,6 +117,6 @@ export async function SwitchNetwork() {
       blockExplorerUrls: ['https://testnet.snowtrace.io'],
     }],
   }).catch((error) => {
-    console.log(error);
+    setErrorMessage(error);
   });
 }

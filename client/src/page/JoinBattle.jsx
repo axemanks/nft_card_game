@@ -9,6 +9,7 @@ const JoinBattle = () => {
     const navigate = useNavigate();
     const { contract, gameData, setShowAlert, setBattleName, setErrorMessage, walletAddress } = useGlobalContext();
 
+  // if player has an active battle, redirect to the active battle
     useEffect(() => {
         if (gameData?.activeBattle?.battleStatus === 1) navigate(`/battle/${gameData.activeBattle.name}`);
     }, [gameData]);
@@ -18,7 +19,7 @@ const JoinBattle = () => {
     setBattleName(battleName);
 
     try {
-      await contract.joinBattle(battleName);
+      await contract.joinBattle(battleName, { gasLimit: 200000 });
 
       setShowAlert({ status: true, type: 'success', message: `Joining ${battleName}` });
     } catch (error) {
