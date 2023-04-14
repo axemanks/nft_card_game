@@ -66,7 +66,7 @@ const Battle = () => {
     playAudio(choice === 1 ? attackSound : defenseSound);
 
     try {
-      await contract.attackOrDefendChoice(choice, battleName); // , { gasLimit: 200000 }
+      await contract.attackOrDefendChoice(choice, battleName, { gasLimit: 200000 }); // , { gasLimit: 200000 } when added the alert that a move was already made stops working
 
       setShowAlert({
         status: true,
